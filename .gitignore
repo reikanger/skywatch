@@ -79,7 +79,7 @@ target/
 .ipynb_checkpoints
 
 # Adding config.py file.
-api_keys.py
+config.py
 
 # IPython
 profile_default/
