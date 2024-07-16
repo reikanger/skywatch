@@ -80,6 +80,7 @@ target/
 
 # Adding config.py file.
 config.py
+api_keys.py
 
 # IPython
 profile_default/
