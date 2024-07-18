@@ -48,7 +48,7 @@ def main():
     print('Starting weather data collection every hour (Ctrl-C to exit):')
 
     # collect weather data every hour, at the top of the hour
-    schedule.every(2).minutes.at(':00').do(collect_weather_data)
+    schedule.every().hour.at(':00').do(collect_weather_data)
 
     # run indefinitely on a schedule, exit on KeyboardInterrupt
     try:
