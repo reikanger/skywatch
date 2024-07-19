@@ -16,6 +16,12 @@ let baseMaps = {
 	"Topographic Map": topo
 };
 
+// Overlay map:
+//
+// create an object to hold the layer groups for toggle on/off
+let overlayMaps = {
+};
+
 // Create Leaflet map:
 //
 // add leaflet map to 'map' div in index.html
@@ -27,7 +33,7 @@ let myMap = L.map("map", {
 	layers: [street]
 });
 
-L.control.layers(baseMaps, {
+L.control.layers(baseMaps, overlayMaps, {
 	collapsed: false
 }).addTo(myMap);
 
