@@ -20,9 +20,9 @@ let baseMaps = {
 //
 // array to hold airport geo-locations
 const airports = [
-	{'city': 'Minneapolis-St. Paul', 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88]},
-	{'city': 'Duluth', 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84]},
-	{'city': 'Rochester', 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91]},
+	{'city': 'Minneapolis-St. Paul', 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88], 'website': 'https://www.mspairport.com/'},
+	{'city': 'Duluth', 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84], 'website': 'https://duluthairport.com/'},
+	{'city': 'Rochester', 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91], 'website': 'https://flyrst.com/'},
 ];
 
 // array to hold airport layers for Leaflet for each airport
@@ -36,6 +36,9 @@ for (let i = 0; i < airports.length; i++) {
 	let feature = L.circleMarker(
 		[lat, lon]
 	)
+	.bindPopup(`
+		Website: <a href="${airports[i].website}">${airports[i].website}</a>
+	`);
 
 	//add new layer to airports_array
 	airports_array.push(feature);
