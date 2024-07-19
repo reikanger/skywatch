@@ -16,10 +16,39 @@ let baseMaps = {
 	"Topographic Map": topo
 };
 
+// Airports data:
+//
+// array to hold airport geo-locations
+const airports = [
+	{'city': 'Minneapolis-St. Paul', 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88]},
+	{'city': 'Duluth', 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84]},
+	{'city': 'Rochester', 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91]},
+];
+
+// array to hold airport layers for Leaflet for each airport
+let airports_array = [];
+
+// loop airports object and make markers
+for (let i = 0; i < airports.length; i++) {
+	let lon = airports[i].coordinates[0];
+	let lat = airports[i].coordinates[1];
+
+	let feature = L.circleMarker(
+		[lat, lon]
+	)
+
+	//add new layer to airports_array
+	airports_array.push(feature);
+};
+
+// create a layer group for the airport markers
+let airports_group = L.layerGroup(airports_array);
+
 // Overlay map:
 //
 // create an object to hold the layer groups for toggle on/off
 let overlayMaps = {
+	Airports: airports_group
 };
 
 // Create Leaflet map:
@@ -30,7 +59,7 @@ let myMap = L.map("map", {
 		45.00, -93.00
 	],
 	zoom: 7,
-	layers: [street]
+	layers: [street, airports_group]
 });
 
 L.control.layers(baseMaps, overlayMaps, {
