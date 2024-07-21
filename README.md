@@ -12,3 +12,5 @@ Install opensky-api Python module (included in support folder)
 ```
 pip install -e ./support/opensky-api/python
 ```
+## Other modules used:
+leaflet-radar.js which uses Iowa State University's mesonet found at: https://mesonet.agron.iastate.edu/
