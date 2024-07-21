@@ -36,12 +36,12 @@ d3.json(url, {
 	
 	// loop aircraft object and make markers
 	for (let i = 0; i < data.states.length; i++) {
-		console.log(data.states[i]);
+		//console.log(data.states[i]);
 		let callsign = data.states[i][1].trimEnd();
 		let lat = data.states[i][6];
 		let lon = data.states[i][5];
 
-		console.log(`callsign: ${callsign} lon: ${lon} lat: ${lat}`);
+		//console.log(`callsign: ${callsign} lon: ${lon} lat: ${lat}`);
 
 		// create a new Leaflet geoJSON layer, and attach a popup with more info
 		let feature = L.circleMarker(
@@ -108,5 +108,8 @@ d3.json(url, {
 	L.control.layers(baseMaps, overlayMaps, {
 		collapsed: false
 	}).addTo(myMap);
+
+	// add radar layer
+	L.control.radar({}).addTo(myMap);
 
 });
