@@ -44,6 +44,7 @@ d3.json(url).then(function (data) {
 		let icao24 = data[i]['icao24'];
 		let lat = data[i]['latitude'];
 		let lon = data[i]['longitude'];
+		let true_track = data[i]['true_track'];
 
 		//console.log(`callsign: ${callsign} lon: ${lon} lat: ${lat}`);
 		var aircraftIcon = L.icon({
@@ -55,11 +56,16 @@ d3.json(url).then(function (data) {
 		// create a new Leaflet geoJSON layer, and attach a popup with more info
 		let feature = L.marker(
 			[lat, lon],
-			{icon: aircraftIcon}
+			{
+				icon: aircraftIcon
+			}
 		).bindPopup(`
 			<h3>Callsign ${callsign}</h3>
 			Transponder ICAO24: ${icao24}
 		`);
+
+		//feature._icon.style.transform = `rotate(${true_track}deg)`;
+		//feature._icon.style.transformOrigin = 'center';
 
 		// add new layer to aircrafts_array
 		aircrafts_array.push(feature);
