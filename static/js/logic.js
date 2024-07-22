@@ -1,15 +1,18 @@
 // set URL for OpenSky REST API
 //let url = 'https://opensky-network.org/api/states/all';  // all flights
-let url = 'https://opensky-network.org/api/states/all?lamin=42.0000&lomin=-98.0000&lamax=50.0000&lomax=-89.0000';  // bounding box covering Minnesota
+//let url = 'https://opensky-network.org/api/states/all?lamin=42.0000&lomin=-98.0000&lamax=50.0000&lomax=-89.0000';  // bounding box covering Minnesota
+let url = 'http://127.0.0.1:5000/api/v1/minnesota-airspace/'
 
 // request data from URL - with basic HTTP authentication, and execute callback function once loaded
-d3.json(url, {
-	method: 'GET',
-	headers: {'Authorization': 'Basic ' + btoa('USERNAME' + ':' + 'PASSWORD')}, // NOTE: Add your OpenSky credentials here
-	creadentials: 'include'
-}).then(function (data) {
+//d3.json(url, {
+//	method: 'GET',
+//	headers: {'Authorization': 'Basic ' + btoa('USERNAME' + ':' + 'PASSWORD')}, // NOTE: Add your OpenSky credentials here
+//	creadentials: 'include'
+//}).then(function (data) {
+//d3.json(url, { mode: 'no-cors' }).then(function (data) {
+d3.json(url).then(function (data) {
 	// dev work
-	//console.log(data);
+	console.log(data);
 
 	// Base Maps Layers:
 	//
@@ -35,11 +38,11 @@ d3.json(url, {
 	let aircrafts_array = [];
 	
 	// loop aircraft object and make markers
-	for (let i = 0; i < data.states.length; i++) {
+	for (let i = 0; i < data.length; i++) {
 		//console.log(data.states[i]);
-		let callsign = data.states[i][1].trimEnd();
-		let lat = data.states[i][6];
-		let lon = data.states[i][5];
+		let callsign = data[i]['callsign'];
+		let lat = data[i]['latitude'];
+		let lon = data[i]['longitude'];
 
 		//console.log(`callsign: ${callsign} lon: ${lon} lat: ${lat}`);
 
@@ -112,4 +115,8 @@ d3.json(url, {
 	// add radar layer
 	L.control.radar({}).addTo(myMap);
 
+})
+.catch(error => {
+	// handle errors
+	console.error('Error fetching data: ', error);
 });
