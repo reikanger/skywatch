@@ -2,3 +2,5 @@ jupyterlab
 pandas
 schedule
 pymongo
+flask
+flask-cors
