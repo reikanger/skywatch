@@ -55,83 +55,56 @@ d3.json(url, {
 	};
 	
 	// Airports data:
-	//
-
-	// array to hold airport geo-locations
 	const airports = [
 		{'city': 'Minneapolis-St. Paul', 'zipcode': [55111], 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88], 'website': 'https://www.mspairport.com/'},
 		{'city': 'Duluth', 'zipcode': [55811], 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84], 'website': 'https://duluthairport.com/'},
-		{'city': 'Rochester', 'zipcode': [55902], 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91], 'website': 'https://flyrst.com/'},
+		{'city': 'Rochester', 'zipcode': [55902], 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91], 'website': 'https://flyrst.com'},
 	];
 	
 	// array to hold airport layers for Leaflet for each airport
 	let airports_array = [];
-
-	// loop airports object and make markers
-	for (let i = 0; i < airports.length; i++) {
-		let lon = airports[i].coordinates[0];
-		let lat = airports[i].coordinates[1];
 	
-		let feature = L.circleMarker(
-			[lat, lon],
-			{
-				color: 'red'
-			}
-		).bindPopup(`
-			<strong>City:</strong> ${airports[i].city}<br>
-        	<strong>Website:</strong> <a href="${airports[i].website}">${airports[i].website}</a><br>
-        	<strong>Weather Data:</strong><br>
-        	<div id="weather-${i}"></div>
-    	`);
-// Check the API Request:
-let weather_api_key = '47f834353551489d82525606241707';
-const apiUrl = `http://api.weatherapi.com/v1/current.json?key=${weather_api_key}&q=${airports[i].zipcode[0]}&aqi=no`;
+	// loop airports object and fetch weather data for each airport
 
-// Log the constructed API URL for verification
-console.log("API URL:", apiUrl);
+	for (let i = 0; i < airports.length; i++) {
+    	let lon = airports[i].coordinates[0];
+    	let lat = airports[i].coordinates[1];
 
-// Make the API request
-fetch(apiUrl)
-    .then(response => response.json())
-    .then(weather => {
-        // Log the entire weather object for inspection
-        console.log("Weather Data:", weather);
+    	let feature = L.circleMarker([lat, lon], { color: 'red' })
+        	.bindPopup(`
+            	<strong>City:</strong> ${airports[i].city}<br>
+            	<strong>Website:</strong> <a href="${airports[i].website}">${airports[i].website}</a><br>
+            	<strong>Weather Data:</strong><br>
+            	<div id="weather-${i}"></div>
+        `);
 
-        // Check if the 'location' property exists in the weather object
-        if (weather && weather.location) {
-            // Access the 'location' property
-            console.log("Location:", weather.location);
-        } else {
-            console.error("Location data is missing in the weather object");
-        }
+// Fetch weather data for each airport
+		const weather_api_key = '47f834353551489d82525606241707';
+		fetch(`http://api.weatherapi.com/v1/current.json?key=${weather_api_key}&q=${airports[i].zipcode[0]}&aqi=no`)
+    	.then(response => response.json())
+    	.then(weather => {
+			// Store the data in a variable or file
+            const jsonWeather = JSON.stringify(weather);
+            console.log(jsonWeather); // Output the JSON data to the console
+ // You can process the weather data here for each airport
 
-        // Continue with data parsing and updating HTML elements
-    })
-    .catch(error => console.error("Error fetching weather data:", error));
-
-
-
-    // Fetch weather data and update the popup content
-	weather_api_key = '47f834353551489d82525606241707'      
-    fetch(`http://api.weatherapi.com/v1/current.json?key={weather_api_key}&q=${airports[i].zipcode[0]}&aqi=no`)
-        .then(response => response.json())
-        .then(weather => {
-            let weatherContent = `
-                <strong>Local Time:</strong> ${weather.location.localtime}<br>
-                <strong>Condition:</strong> ${weather.current.condition.text}<br>
-                <strong>Wind mph:</strong> ${weather.current.wind_mph} / <strong>Wind kph:</strong> ${weather.current.wind_kph}<br>
-                <strong>Temperature F:</strong> ${weather.current.temp_f} / <strong>Temperature C:</strong> ${weather.current.temp_c}<br>
-                <strong>Wind Direction:</strong> ${weather.current.wind_dir}<br>
-                <strong>Visibility miles:</strong> ${weather.current.vis_miles} / <strong>Visibility km:</strong> ${weather.current.vis_km}<br>
-                <strong>Gust mph:</strong> ${weather.current.gust_mph} / <strong>Gust kph:</strong> ${weather.current.gust_kph}<br>
-            `;
-            document.getElementById(`weather-${i}`).innerHTML = weatherContent;
-        });		
-		
-		//add new layer to airports_array
+        	let weatherContent = `
+            	<strong>Local Time:</strong> ${weather.location.localtime}<br>
+            	<strong>Condition:</strong> ${weather.current.condition.text}<br>
+            	<strong>Wind mph:</strong> ${weather.current.wind_mph} / <strong>Wind kph:</strong> ${weather.current.wind_kph}<br>
+            	<strong>Temperature F:</strong> ${weather.current.temp_f} / <strong>Temperature C:</strong> ${weather.current.temp_c}<br>
+            	<strong>Wind Direction:</strong> ${weather.current.wind_dir}<br>
+            	<strong>Visibility miles:</strong> ${weather.current.vis_miles} / <strong>Visibility km:</strong> ${weather.current.vis_km}<br>
+            	<strong>Gust mph:</strong> ${weather.current.gust_mph} / <strong>Gust kph:</strong> ${weather.current.gust_kph}<br>
+        `;
+        	document.getElementById(`weather-${i}`).innerHTML = weatherContent;
+    });
+	
+	// Add new layer to airports_array
 		airports_array.push(feature);
 	};
-	
+
+
 	// create a layer group for the airport markers
 	let aircrafts_group = L.layerGroup(aircrafts_array);
 	let airports_group = L.layerGroup(airports_array);
@@ -161,5 +134,4 @@ fetch(apiUrl)
 
 	// add radar layer
 	L.control.radar({}).addTo(myMap);
-
 });
