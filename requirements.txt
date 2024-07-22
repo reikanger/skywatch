@@ -4,3 +4,4 @@ schedule
 pymongo
 flask
 flask-cors
+cryptography

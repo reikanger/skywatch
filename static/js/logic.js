@@ -1,7 +1,7 @@
 // set URL for OpenSky REST API
 //let url = 'https://opensky-network.org/api/states/all';  // all flights
 //let url = 'https://opensky-network.org/api/states/all?lamin=42.0000&lomin=-98.0000&lamax=50.0000&lomax=-89.0000';  // bounding box covering Minnesota
-let url = 'http://146.190.144.51:35081/api/v1/minnesota-airspace/'
+let url = 'https://146.190.144.51:35081/api/v1/minnesota-airspace/'
 
 // request data from URL - with basic HTTP authentication, and execute callback function once loaded
 //d3.json(url, {
