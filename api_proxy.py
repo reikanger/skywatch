@@ -2,6 +2,8 @@
 
 # Import the dependencies.
 import requests
+import time
+from datetime import datetime, timezone, timedelta
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -9,6 +11,70 @@ from flask_cors import CORS
 from opensky_api import OpenSkyApi
 from config import opensky_user, opensky_pass
 
+# global variables
+# Set ICAO values of the airports of interest:
+# - Minneapolis–St. Paul International: KMSP
+# - Duluth International Airport: KDLH
+# - Rochester International Airport: KRST
+airports = ['KMSP', 'KDLH', 'KRST']
+
+# supporting functions
+def datetime_to_unix(dt):
+    return int(time.mktime(dt.timetuple()))
+
+def get_arrival_transponders():
+    # connect to OpenSky API
+    api = OpenSkyApi(opensky_user, opensky_pass)
+
+    # determine timestamp values for time range: one half day ago to current
+    now = datetime.now()
+    day_ago = now - timedelta(hours=24)
+    start_ts = datetime_to_unix(day_ago)
+    end_ts = datetime_to_unix(now)
+
+    # array to hold unique transponders
+    transponders = []
+
+    # get the unique flights going to or from our airports
+    for airport in airports:
+        # get unique arrival aircraft
+        arrivals = api.get_arrivals_by_airport(airport, start_ts, end_ts)
+        if arrivals is not None:
+            for flight in arrivals:
+                if flight.icao24 not in transponders:
+                    transponders.append(flight.icao24)
+
+    # check that we got values and return them
+    print(type(transponders))
+    print(transponders)
+    return transponders
+
+def get_departure_transponders():
+    # connect to OpenSky API
+    api = OpenSkyApi(opensky_user, opensky_pass)
+
+    # determine timestamp values for time range: one half day ago to current
+    now = datetime.now()
+    day_ago = now - timedelta(hours=24)
+    start_ts = datetime_to_unix(day_ago)
+    end_ts = datetime_to_unix(now)
+
+    # array to hold unique transponders
+    transponders = []
+
+    # get the unique flights going to or from our airports
+    for airport in airports:
+        # get unique departure aircraft
+        departures = api.get_departures_by_airport(airport, start_ts, end_ts)
+        if departures is not None:
+            for flight in departures:
+                if flight.icao24 not in transponders:
+                    transponders.append(flight.icao24)
+
+    # check that we got values and return them
+    print(type(transponders))
+    print(transponders)
+    return transponders
 
 #################################################
 # Flask Setup
@@ -129,6 +195,13 @@ def minnesota_airspace():
     else:
         return False
     
+@app.route('/api/v1/minnesota-departures/')
+def minnesota_departures():
+    return get_departure_transponders()
+
+@app.route('/api/v1/minnesota-arrivals/')
+def minnesota_arrivals():
+    return get_arrival_transponders()
 
 if __name__ == '__main__':
     app.run(debug=True)

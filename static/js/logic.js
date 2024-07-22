@@ -46,10 +46,16 @@ d3.json(url).then(function (data) {
 		let lon = data[i]['longitude'];
 
 		//console.log(`callsign: ${callsign} lon: ${lon} lat: ${lat}`);
+		var aircraftIcon = L.icon({
+			iconUrl: 'static/images/airplaneIcon.png',
+			iconSize: [30, 30],
+			iconAnchor: [22, 22]
+		});
 
 		// create a new Leaflet geoJSON layer, and attach a popup with more info
-		let feature = L.circleMarker(
-			[lat, lon]
+		let feature = L.marker(
+			[lat, lon],
+			{icon: aircraftIcon}
 		).bindPopup(`
 			<h3>Callsign ${callsign}</h3>
 			Transponder ICAO24: ${icao24}
@@ -75,9 +81,16 @@ d3.json(url).then(function (data) {
 	for (let i = 0; i < airports.length; i++) {
 		let lon = airports[i].coordinates[0];
 		let lat = airports[i].coordinates[1];
-	
-		let feature = L.circleMarker(
-			[lat, lon]
+
+		var airportIcon = L.icon({
+			iconUrl: 'static/images/airportIcon.png',
+			iconSize: [50, 50],
+			iconAnchor: [22, 22]
+		});
+
+		let feature = L.marker(
+			[lat, lon],
+			{icon: airportIcon}
 		)
 		.bindPopup(`
 			Website: <a href="${airports[i].website}">${airports[i].website}</a>
