@@ -41,6 +41,7 @@ d3.json(url).then(function (data) {
 	for (let i = 0; i < data.length; i++) {
 		//console.log(data.states[i]);
 		let callsign = data[i]['callsign'];
+		let icao24 = data[i]['icao24'];
 		let lat = data[i]['latitude'];
 		let lon = data[i]['longitude'];
 
@@ -51,6 +52,7 @@ d3.json(url).then(function (data) {
 			[lat, lon]
 		).bindPopup(`
 			<h3>Callsign ${callsign}</h3>
+			Transponder ICAO24: ${icao24}
 		`);
 
 		// add new layer to aircrafts_array
