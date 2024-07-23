@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# script designed to run on backend server,
+# to collect the same flight data displayed in the app,
+# and save it to the mongo database
+
 # Dependencies
 import requests
 import schedule
@@ -13,58 +17,21 @@ from opensky_api import OpenSkyApi
 from config import opensky_user, opensky_pass
 
 # Global Variables
-#mongo_server = "146.190.144.51"
-mongo_server = "localhost" # since we're running this script on the VPS itself, we can connect to localhost
+mongo_server = "localhost"
 mongo_port = "27017"
-
-# Set ICAO values of the airports of interest:
-# - Minneapolis–St. Paul International: KMSP
-# - Duluth International Airport: KDLH
-# - Rochester International Airport: KRST
-airports = ['KMSP', 'KDLH', 'KRST']
 
 
 def datetime_to_unix(dt):
     return int(time.mktime(dt.timetuple()))
 
 
-def get_transponders():
-    # connect to OpenSky API
-    api = OpenSkyApi(opensky_user, opensky_pass)
-
-    # determine timestamp values for time range: one half day ago to current
-    now = datetime.now()
-    half_day_ago = now - timedelta(hours=12)
-    start_ts = datetime_to_unix(half_day_ago)
-    end_ts = datetime_to_unix(now)
-
-    # array to hold unique transponders
-    transponders = []
-
-    # get the unique flights going to or from our airports
-    for airport in airports:
-        # get unique arrival aircraft
-        arrivals = api.get_arrivals_by_airport(airport, start_ts, end_ts)
-        if arrivals is not None:
-            for flight in arrivals:
-                if flight.icao24 not in transponders:
-                    transponders.append(flight.icao24)
-
-        # get unique departure aircraft
-        departures = api.get_departures_by_airport(airport, start_ts, end_ts)
-        if departures is not None:
-            for flight in departures:
-                if flight.icao24 not in transponders:
-                    transponders.append(flight.icao24)
-
-    # check that we got values and return them
-    print(type(transponders))
-    print(transponders)
-    del api
-    return transponders
-
 def collect_flight_data():
-    """main function for collecting weather data and shipping it to mongo"""
+    """main function for collecting flight data of upper midwest airspace and shipping it to mongo"""
+
+    lat_min = 40.0000
+    lat_max = 50.0000
+    lon_min = -105.0000
+    lon_max = -80.0000
 
     # connect to mongo database
     mongo_connection_string = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_server}:{mongo_port}/"
@@ -72,16 +39,12 @@ def collect_flight_data():
     db = mongo_client['flights']
     flights_collection = db['flights']
 
-    # get list of aircraft to collect data from
-    transponders = get_transponders()
-
     # connect to OpenSky API
     api = OpenSkyApi(opensky_user, opensky_pass)
 
-    # get state vectors of each tracked arrival aircraft
-    if transponders: # only run if we have a list of aircraft (don't pass empty lists to API)
-        state_data = api.get_states(icao24=transponders)
-        print(f'Just pulled {len(state_data.states)} flight states from API!')
+    # get state vectors of each aircraft in upper midwest airspace
+    state_data = api.get_states(bbox=(lat_min, lat_max, lon_min, lon_max))
+    print(f'Pulled {len(state_data.states)} flight states from OpenSky API!')
 
     # convert class 'opensky_api.OpenSkyStates' to Python dictionary, and ship to Mongo
     if state_data:
@@ -111,7 +74,6 @@ def collect_flight_data():
 
             # send the flight data dictionary to mongo
             insert_result = flights_collection.insert_one(flight_document)
-            print(f'Shipped flight data for {flight_document['callsign']} to Mongo')
 
     # close mongo and API connection
     mongo_client.close()
@@ -120,7 +82,7 @@ def collect_flight_data():
 def main():
     """main function for executing when run as a script"""
 
-    print('Starting flight data collection every hour (Ctrl-C to exit):')
+    print('Starting flight data collection from midwest airspace every hour (Ctrl-C to exit):')
 
     # collect weather data every hour, at the top of the hour
     schedule.every().hour.at(':00').do(collect_flight_data)
