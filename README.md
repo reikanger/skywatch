@@ -2,8 +2,9 @@
 Group project with Ryan Eikanger, Melissa Judy, and Robin Ryan
 ---
 Inital project proposal found under 'Proposal_GroupProject3'
+---
 Explanation of process, map, and data ethics found under 'Project3Info'
-
+---
 ## Preqreqs
 
 Install Python modules:
