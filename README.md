@@ -1,11 +1,11 @@
 # Project-3
-```
+
 Group project with Ryan Eikanger, Melissa Judy, and Robin Ryan
-```
+
 Inital project proposal found under 'Proposal_GroupProject3'
-```
+
 Explanation of process, map usage, data ethics, and citations found under 'Project3Info'
-```
+
 ## Preqreqs
 
 Install Python modules:
