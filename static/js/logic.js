@@ -140,71 +140,101 @@ d3.json(url).then(function (data) {
 		aircrafts_array.push(feature);
 	};
 	
-	// Airports data:
+	// Airports and local weather data:
 	//
 	// array to hold airport geo-locations
 	const airports = [
-		{'city': 'Minneapolis-St. Paul', 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88], 'website': 'https://www.mspairport.com/'},
-		{'city': 'Duluth', 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84], 'website': 'https://duluthairport.com/'},
-		{'city': 'Rochester', 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91], 'website': 'https://flyrst.com/'},
+		{'city': 'Minneapolis-St. Paul', 'zipcode': [55111], 'icao': 'KMSP', 'faa': 'MSP', 'coordinates': [-93.22, 44.88], 'website': 'https://www.mspairport.com/'},
+		{'city': 'Duluth', 'zipcode': [55811], 'icao': 'KDLH', 'faa': 'DLH', 'coordinates': [-92.18, 46.84], 'website': 'https://duluthairport.com/'},
+		{'city': 'Rochester', 'zipcode': [55902], 'icao': 'KRST', 'faa': 'RST', 'coordinates': [-92.50, 43.91], 'website': 'https://flyrst.com/'},
 	];
 	
 	// array to hold airport layers for Leaflet for each airport
 	let airports_array = [];
+
+	// array to hold airport weather data
+	let weatherApiPromiseArray = [];
 	
 	// loop airports object and make markers
 	for (let i = 0; i < airports.length; i++) {
 		let lon = airports[i].coordinates[0];
 		let lat = airports[i].coordinates[1];
+		const weather_api_key = '47f834353551489d82525606241707';
 
-		var airportIcon = L.icon({
-			iconUrl: 'static/images/airportIcon.png',
-			iconSize: [50, 50],
-			iconAnchor: [22, 22]
+		let promise = fetch(`http://api.weatherapi.com/v1/current.json?key=${weather_api_key}&q=${airports[i].zipcode[0]}&aqi=no`);
+		weatherApiPromiseArray.push(promise);
+
+		promise.then(response => response.json())
+			.then(weather => {
+				// Store the data in a variable or file
+				const jsonWeather = JSON.stringify(weather);
+				console.log(jsonWeather); // Output the JSON data to the console
+
+				let weatherContent = `
+					<strong>Local Time:</strong> ${weather.location.localtime}<br>
+					<strong>Condition:</strong> ${weather.current.condition.text}<br>
+					<strong>Wind mph:</strong> ${weather.current.wind_mph} / <strong>Wind kph:</strong> ${weather.current.wind_kph}<br>
+					<strong>Temperature F:</strong> ${weather.current.temp_f} / <strong>Temperature C:</strong> ${weather.current.temp_c}<br>
+					<strong>Wind Direction:</strong> ${weather.current.wind_dir}<br>
+					<strong>Visibility miles:</strong> ${weather.current.vis_miles} / <strong>Visibility km:</strong> ${weather.current.vis_km}<br>
+					<strong>Gust mph:</strong> ${weather.current.gust_mph} / <strong>Gust kph:</strong> ${weather.current.gust_kph}<br>
+				`;
+				document.getElementById(`weather-${i}`).innerHTML = weatherContent;
+				// Add time out here?
+
+				var airportIcon = L.icon({
+					iconUrl: 'static/images/airportIcon.png',
+					iconSize: [30, 30],
+					iconAnchor: [22, 22]
+				});
+
+				let feature = L.marker(
+					[lat, lon],
+					{ icon: airportIcon })
+				.bindPopup(`
+					<strong>City:</strong> ${airports[i].city}<br>
+					<strong>Website:</strong> <a href="${airports[i].website}">${airports[i].website}</a><br>
+					<strong>Weather Data:</strong><br>
+					<div id="weather-${i}">${weatherContent}</div>
+				`);
+
+			//add new layer to airports_array
+			airports_array.push(feature);
 		});
+	};
 
-		let feature = L.marker(
-			[lat, lon],
-			{icon: airportIcon}
-		)
-		.bindPopup(`
-			Website: <a href="${airports[i].website}">${airports[i].website}</a>
-		`);
+	Promise.all(weatherApiPromiseArray).then((values)=>{
 	
-		//add new layer to airports_array
-		airports_array.push(feature);
-	};
-	
-	// create a layer group for the airport markers
-	let aircrafts_group = L.layerGroup(aircrafts_array);
-	let airports_group = L.layerGroup(airports_array);
-	
-	// Overlay map:
-	//
-	// create an object to hold the layer groups for toggle on/off
-	let overlayMaps = {
-		Aircraft: aircrafts_group,
-		Airports: airports_group
-	};
-	
-	// Create Leaflet map:
-	//
-	// add leaflet map to 'map' div in index.html
-	let myMap = L.map("map", {
-		center: [
-			45.00, -93.00
-		],
-		zoom: 7,
-		layers: [street, aircrafts_group, airports_group]
+		// create a layer group for the airport markers
+		let aircrafts_group = L.layerGroup(aircrafts_array);
+		let airports_group = L.layerGroup(airports_array);
+		
+		// Overlay map:
+		//
+		// create an object to hold the layer groups for toggle on/off
+		let overlayMaps = {
+			Aircraft: aircrafts_group,
+			Airports: airports_group
+		};
+		
+		// Create Leaflet map:
+		//
+		// add leaflet map to 'map' div in index.html
+		let myMap = L.map("map", {
+			center: [
+				45.00, -93.00
+			],
+			zoom: 7,
+			layers: [street, aircrafts_group, airports_group]
+		});
+		
+		L.control.layers(baseMaps, overlayMaps, {
+			collapsed: false
+		}).addTo(myMap);
+
+		// add radar layer
+		L.control.radar({}).addTo(myMap);
 	});
-	
-	L.control.layers(baseMaps, overlayMaps, {
-		collapsed: false
-	}).addTo(myMap);
-
-	// add radar layer
-	L.control.radar({}).addTo(myMap);
-
 })
 .catch(error => {
 	// handle errors
