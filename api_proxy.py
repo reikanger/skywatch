@@ -152,13 +152,13 @@ def trajectory(icao24):
     }
 
 
-@app.route('/api/v1/minnesota-airspace/')
+@app.route('/api/v1/midwest-airspace/')
 def minnesota_airspace():
-    print('Hello minnesota_airspace() function!')
-    lat_min = 42.0000
+    print('Hello midwest_airspace() function!')
+    lat_min = 40.0000
     lat_max = 50.0000
-    lon_min = -98.0000
-    lon_max = -89.0000
+    lon_min = -105.0000
+    lon_max = -80.0000
     print((lat_min, lat_max, lon_min, lon_max))
 
     # print(opensky_user, opensky_pass)
