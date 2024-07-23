@@ -1,7 +1,7 @@
 // set URL for OpenSky REST API
 //let url = 'https://opensky-network.org/api/states/all';  // all flights
 //let url = 'https://opensky-network.org/api/states/all?lamin=42.0000&lomin=-98.0000&lamax=50.0000&lomax=-89.0000';  // bounding box covering Minnesota
-let url = 'https://146.190.144.51:35081/api/v1/minnesota-airspace/'
+let url = 'http://127.0.0.1:5000/api/v1/minnesota-airspace/'
 
 // request data from URL - with basic HTTP authentication, and execute callback function once loaded
 //d3.json(url, {
@@ -57,12 +57,32 @@ d3.json(url).then(function (data) {
 		let feature = L.marker(
 			[lat, lon],
 			{
-				icon: aircraftIcon
+				icon: aircraftIcon,
+				rotationAngle: true_track,
+				draggable: false
 			}
 		).bindPopup(`
 			<h3>Callsign ${callsign}</h3>
 			Transponder ICAO24: ${icao24}
-		`);
+		`).on('popupopen', function (e) {
+			// on clicking popup for individual aircraft, request and display its trajectory as a line
+			console.log(`User clicked aircraft with ICAO24 value of: ${icao24}`);
+			console.log(e);
+			let track_url = `http://127.0.0.1:5000/api/v1/trajectory/${icao24}`;
+			d3.json(track_url).then(function (data) {
+				//console.log(data);
+				let path = data.path;
+				//console.log(path);
+				waypoints = [];
+				for (let j = 0; j < path.length; j++) {
+					console.log(path[j]);
+					let waypoint_lat = path[j][1];
+					let waypoint_lon = path[j][2]; 
+					console.log(waypoint_lat);
+					console.log(waypoint_lon);
+				};
+			});
+		});
 
 		//feature._icon.style.transform = `rotate(${true_track}deg)`;
 		//feature._icon.style.transformOrigin = 'center';
