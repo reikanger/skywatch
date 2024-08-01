@@ -36,6 +36,14 @@ Then, install the opensky-api module with `pip`.
 cd opensky-api
 pip install -e ./support/opensky-api/python
 ```
+### Leaflet Rotated Marker
+Leaflet Rotated Marker is a plugin that enables rotation of marker icons in Leaflet.
+
+The plugin is included in this project, but if needed, install the plugin through the npm package manager.
+
+```
+npm install leaflet-rotatedmarker
+```
 
 ## References
 ### OpenSky Network
