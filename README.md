@@ -9,7 +9,8 @@ Initial project proposal found under 'Proposal_GroupProject3'
 
 Explanation of process, map usage, data ethics, and citations found under 'Project3Info'
 
-Link to presentation: or add PDF to repo
+Presentation: [https://docs.google.com/presentation/d/1AmBSM6ayavU_XtMIRKjHrXmCjitdwrjP2nzf14Lopvc/edit?usp=sharing](https://docs.google.com/presentation/d/1AmBSM6ayavU_XtMIRKjHrXmCjitdwrjP2nzf14Lopvc/edit?usp=sharing)
+
 
 ## Prerequisites
 ### Python Modules
