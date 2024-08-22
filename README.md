@@ -1,4 +1,4 @@
-# Project 3
+# SkyWatch: Flight and Weather Tracker
 Group Members:
 
 - Ryan Eikanger
