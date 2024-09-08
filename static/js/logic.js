@@ -1,7 +1,7 @@
 // set URL for OpenSky REST API
 //let url = 'https://opensky-network.org/api/states/all';  // all flights
 //let url = 'https://opensky-network.org/api/states/all?lamin=42.0000&lomin=-98.0000&lamax=50.0000&lomax=-89.0000';  // bounding box covering Minnesota
-let url = 'http://127.0.0.1:5000/api/v1/midwest-airspace/'
+let url = 'https://skywatch-api.reika.io/api/v1/midwest-airspace/'
 
 //let waypoints = [];
 //let polyline = null;
@@ -118,7 +118,7 @@ d3.json(url).then(function (data) {
 			// on clicking popup for individual aircraft, request and display its trajectory as a line
 			//console.log(`User clicked aircraft with ICAO24 value of: ${icao24}`);
 			//console.log(e);
-			let track_url = `http://127.0.0.1:5000/api/v1/trajectory/${icao24}`;
+			let track_url = `https://skywatch-api.reika.io/api/v1/trajectory/${icao24}`;
 			d3.json(track_url).then(function (data) {
 				////console.log(data);
 				let path = data.path;
